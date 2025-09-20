@@ -21,7 +21,7 @@ The project uses a dummy dataset of movies.
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone <your-repo-link>
+   git clone (https://github.com/manrajcanada2002-create/movie-library-api)>
    ```
 2. Install dependencies:
    ```bash
