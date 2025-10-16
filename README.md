@@ -1,41 +1,30 @@
 # Movie Library API
 
-## Author
-Manraj Singh
+Simple modular Express.js backend for a Movie Library project.
 
-## Project Overview
-This is a simple **Node.js + Express.js** project created for Phase 1 of the course.  
-It demonstrates setting up routes and dummy data for a Movie Library.
+---
 
-## Features (Planned)
-- Get all movies (`GET /movies`)
-- Get movie by ID (`GET /movies/:id`)
-- Add a new movie (`POST /movies`)
-- Delete a movie (`DELETE /movies/:id`)
-- Update movie details (`PUT /movies/:id`)
+## Phase 2 — Modular Architecture Implementation
 
-## Dataset
-The project uses a dummy dataset of movies.  
-(Example: Inception, The Dark Knight, Interstellar)
+**What I implemented**
+- Feature-based modular structure:
+  - `modules/movies/` — contains `models.js` (CRUD/business logic) and `middlewares.js` (validation).
+  - `routes/movies.js` — Express routes that call model functions only.
+- JSON data store:
+  - `data/movies.json` — sample movie records used as a simple file-based data source.
+- Validation:
+  - `express-validator` used for route-level validation (POST/PUT and `:id` param checks).
+- App-level middleware & error handling:
+  - `express.json()` and `express.urlencoded()` parsing.
+  - 404 Not Found handler and centralized error-handling middleware that logs errors and returns `500`.
+- Proper HTTP status codes:
+  - `200` → GET/PUT/DELETE success
+  - `201` → POST created
+  - `400` → validation errors
+  - `404` → resource not found
+  - `500` → server errors
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone (https://github.com/manrajcanada2002-create/movie-library-api)>
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the server:
-   ```bash
-   node app.js
-   ```
+---
 
-## API Routes
-- **GET /** → Welcome message  
-- **GET /movies** → Returns all movies  
-- **GET /movies/:id** → Returns a movie by ID  
+## Project structure
 
-## License
-This project is for academic purposes only.
