@@ -1,14 +1,25 @@
 {
-  "name": "movie-library-api",
+  "name": "movie-library-phase3",
   "version": "1.0.0",
+  "description": "Phase 3 - Movie Library API with MongoDB Atlas (Mongoose, CommonJS)",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
+  "keywords": [
+    "express",
+    "mongoose",
+    "movie-library",
+    "api"
+  ],
+  "author": "Manraj Singh",
+  "license": "ISC",
   "dependencies": {
     "express": "^4.19.0",
-    "express-validator": "^7.0.1"
+    "mongoose": "^7.0.0",
+    "express-validator": "^7.0.1",
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

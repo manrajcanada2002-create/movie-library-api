@@ -1,23 +1,49 @@
 const express = require('express');
 const router = express.Router();
+const Movie = require('../modules/movies/models'); // Updated import path
 
-// Dummy movie data
-let movies = [
-  { id: 1, title: "Inception", genre: "Sci-Fi" },
-  { id: 2, title: "The Dark Knight", genre: "Action" },
-  { id: 3, title: "Interstellar", genre: "Sci-Fi" }
-];
-
-// GET all movies -> http://localhost:3000/movies
-router.get('/', (req, res) => {
-  res.json(movies);
+// GET all movies
+router.get('/', async (req, res) => {
+  try {
+    const movies = await Movie.find();
+    res.json({ 
+      message: 'Movies retrieved successfully',
+      count: movies.length,
+      data: movies 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-// GET movie by ID -> http://localhost:3000/movies/1
-router.get('/:id', (req, res) => {
-  const movie = movies.find(m => m.id === parseInt(req.params.id));
-  if (!movie) return res.status(404).json({ error: 'Movie not found' });
-  res.json(movie);
+// POST create a new movie
+router.post('/', async (req, res) => {
+  try {
+    const movie = new Movie(req.body);
+    const savedMovie = await movie.save();
+    res.status(201).json({ 
+      message: 'Movie created successfully',
+      data: savedMovie 
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// GET movie by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.id);
+    if (!movie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+    res.json({ 
+      message: 'Movie retrieved successfully',
+      data: movie 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = router;
