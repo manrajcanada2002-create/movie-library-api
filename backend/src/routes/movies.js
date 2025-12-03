@@ -1,8 +1,13 @@
+
 const express = require("express");
 const router = express.Router();
 const Movie = require("../models/Movie");
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
-// GET all movies
+// PUBLIC ROUTES
+
+// GET all movies (public)
 router.get("/", async (req, res) => {
   try {
     const movies = await Movie.find().sort({ createdAt: -1 });
@@ -12,7 +17,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET single movie
+// GET single movie (public)
 router.get("/:id", async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.id);
@@ -23,48 +28,67 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// CREATE movie
-router.post("/", async (req, res) => {
-  const { title, year, genre, rating } = req.body;
-  if (!title || !year) {
-    return res.status(400).json({ message: "Title and year are required" });
-  }
-  try {
-    const movie = await Movie.create({ title, year, genre, rating });
-    res.status(201).json(movie);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+// PROTECTED + ROLE-BASED ROUTES (admin only)
 
-// UPDATE movie
-router.put("/:id", async (req, res) => {
-  const { title, year, genre, rating } = req.body;
-  if (!title || !year) {
-    return res.status(400).json({ message: "Title and year are required" });
-  }
-  try {
-    const movie = await Movie.findByIdAndUpdate(
-      req.params.id,
-      { title, year, genre, rating },
-      { new: true, runValidators: true }
-    );
-    if (!movie) return res.status(404).json({ message: "Movie not found" });
-    res.json(movie);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+// CREATE movie (admin)
+router.post(
+  "/",
+  authMiddleware,
+  roleMiddleware("admin"),
+  async (req, res) => {
+    const movie = new Movie({
+      title: req.body.title,
+      year: req.body.year,
+      genre: req.body.genre,
+      rating: req.body.rating,
+    });
 
-// DELETE movie
-router.delete("/:id", async (req, res) => {
-  try {
-    const movie = await Movie.findByIdAndDelete(req.params.id);
-    if (!movie) return res.status(404).json({ message: "Movie not found" });
-    res.json({ message: "Movie deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    try {
+      const newMovie = await movie.save();
+      res.status(201).json(newMovie);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
   }
-});
+);
+
+// UPDATE movie (admin)
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("admin"),
+  async (req, res) => {
+    try {
+      const movie = await Movie.findById(req.params.id);
+      if (!movie) return res.status(404).json({ message: "Movie not found" });
+
+      movie.title = req.body.title ?? movie.title;
+      movie.year = req.body.year ?? movie.year;
+      movie.genre = req.body.genre ?? movie.genre;
+      movie.rating = req.body.rating ?? movie.rating;
+
+      const updatedMovie = await movie.save();
+      res.json(updatedMovie);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
+);
+
+// DELETE movie (admin)
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("admin"),
+  async (req, res) => {
+    try {
+      const movie = await Movie.findByIdAndDelete(req.params.id);
+      if (!movie) return res.status(404).json({ message: "Movie not found" });
+      res.json({ message: "Movie deleted" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
 
 module.exports = router;

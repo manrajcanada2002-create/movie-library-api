@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const moviesRouter = require("./src/routes/movies");
+const authRouter = require("./src/routes/auth");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,11 +12,13 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/moviel
 app.use(cors());
 app.use(express.json());
 
+
+app.use("/auth", authRouter);
+app.use("/api/movies", moviesRouter);
+
 app.get("/", (req, res) => {
   res.send("Movie Library API is running");
 });
-
-app.use("/api/movies", moviesRouter);
 
 mongoose
   .connect(MONGODB_URI, {
